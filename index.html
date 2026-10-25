@@ -1,9 +1,29 @@
+
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MonsterDex Online - v1.1.91</title>
+
+    <meta name="description" content="Not endorsed by Big Blue Bubble">
+    <meta name="theme-color" content="#000000">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MonsterDex Online">
+    <meta property="og:title" content="MonsterDex Online">
+    <meta property="og:description" content="Based off of the discord bot, you can catch, collect & battle with over 500 monsters from My Singing Monsters!">
+    <meta property="og:url" content="https://crashtestalex.github.io/mdex-online/">
+    <meta property="og:image" content="https://crashtestalex.github.io/mdex-online/discord-embed.png">
+    <meta property="og:image:secure_url" content="https://crashtestalex.github.io/mdex-online/discord-embed.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="MonsterDex Online">
+
     <style>
       html, body {
         margin: 0;
@@ -13,6 +33,7 @@
         overflow: hidden;
         background: #000000;
       }
+
       #unity-canvas {
         position: fixed;
         top: 0;
@@ -22,18 +43,22 @@
         display: block;
         background: #000000;
       }
+
       #splash {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: #000000;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10;
         opacity: 0;
-        transition: opacity 1s ease; 
+        transition: opacity 1s ease;
       }
+
       #splash img {
         max-width: 80%;
         max-height: 80%;
@@ -41,11 +66,16 @@
       }
     </style>
   </head>
+
   <body>
-    <div id="splash"><img src="splash.png" alt="MonsterDex Online"></div>
+    <div id="splash">
+      <img src="splash.png" alt="MonsterDex Online">
+    </div>
 
     <canvas id="unity-canvas" tabindex="-1"></canvas>
+
     <script src="Build/Downloads.loader.js"></script>
+
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         var meta = document.createElement('meta');
@@ -54,44 +84,61 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
-      // Game loads in the background while the splash plays.
-      const gameReady = createUnityInstance(document.querySelector("#unity-canvas"), {
-        arguments: [],
-        dataUrl: "Build/Downloads.data.unityweb",
-        frameworkUrl: "Build/Downloads.framework.js.unityweb",
-        codeUrl: "Build/Downloads.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "newzac",
-        productName: "MonsterDex Online",
-        productVersion: "1.1.91",
-      }).catch((message) => {
+      const gameReady = createUnityInstance(
+        document.querySelector("#unity-canvas"),
+        {
+          arguments: [],
+          dataUrl: "Build/Downloads.data.unityweb",
+          frameworkUrl: "Build/Downloads.framework.js.unityweb",
+          codeUrl: "Build/Downloads.wasm.unityweb",
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "newzac",
+          productName: "MonsterDex Online",
+          productVersion: "1.1.91",
+        }
+      ).catch((message) => {
         alert(message);
+        throw message;
       });
 
       const FADE_MS = 1000;
       const HOLD_MS = 4000;
-      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const wait = (ms) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
       (async function runSplash() {
         const splash = document.getElementById("splash");
         const img = splash.querySelector("img");
 
-        // Wait for image load
         await new Promise((resolve) => {
-          if (img.complete) resolve();
-          else { img.onload = resolve; img.onerror = resolve; }
+          if (img.complete) {
+            resolve();
+          } else {
+            img.onload = resolve;
+            img.onerror = resolve;
+          }
         });
 
-        img.style.width  = (img.naturalWidth  * 2.25) + "px";
-        img.style.height = (img.naturalHeight * 2.25) + "px";
+        if (img.naturalWidth && img.naturalHeight) {
+          img.style.width = (img.naturalWidth * 2.25) + "px";
+          img.style.height = (img.naturalHeight * 2.25) + "px";
+        }
 
         splash.style.opacity = "1";
+
         await wait(FADE_MS + HOLD_MS);
 
-        await gameReady;
+        try {
+          await gameReady;
+        } catch (error) {
+          return;
+        }
 
         splash.style.opacity = "0";
+
         await wait(FADE_MS);
+
         splash.remove();
       })();
     </script>
